@@ -86,3 +86,6 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # Vercel's file system is read-only. You cannot save media to BASE_DIR/media.
 # You will need to use Supabase Buckets or Cloudinary here.
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' # Example for S3/Supabase
+
+# settings.py
+AUTH_USER_MODEL = 'users.CustomUser'
