@@ -11,7 +11,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-b+cwi6r!r%4=&58i17l*z
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Vercel provides a system env for the URL
-ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1', 'your-supabase-project.supabase.co']
+ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1', 'https://xxuelagumqjmytaacjgg.supabase.co']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
