@@ -11,7 +11,12 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-b+cwi6r!r%4=&58i17l*z
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 # Vercel provides a system env for the URL
-ALLOWED_HOSTS = ['https://chat-xi-khaki-37.vercel.app', 'localhost', '127.0.0.1', 'https://xxuelagumqjmytaacjgg.supabase.co']
+ALLOWED_HOSTS = [
+    'chat-xi-khaki-37.vercel.app', 
+    '.vercel.app', # Allows all Vercel subdomains
+    'localhost', 
+    '127.0.0.1'
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -21,12 +26,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'users',
     'api',
     'chatgroup',
     'status',
     'trends',
-    'users',
-
+    
     # 'channels', # REMOVE THIS: Not supported on Vercel
     'rest_framework',
     'rest_framework_simplejwt',
@@ -46,9 +51,25 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'api.authentication.SupabaseAuthentication', # Use our custom bridge
     ],
 }
 
@@ -62,13 +83,15 @@ SIMPLE_JWT = {
 ROOT_URLCONF = 'app.urls'
 
 # --- DATABASE CONFIG ---
-# On Vercel, we use dj-database-url to pull the Supabase string from an Env Var
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.xxuelagumqjmytaacjgg', # Your user from the screenshot
+        'PASSWORD': 'g9CLArEEdvVZkaeg',
+        'HOST': 'aws-0-eu-west-1.pooler.supabase.com', # Your host from screenshot
+        'PORT': '6543', # Using the pooler port from your screenshot
+    }
 }
 
 # --- REMOVE ASGI/CHANNELS ---
@@ -87,5 +110,9 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # You will need to use Supabase Buckets or Cloudinary here.
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' # Example for S3/Supabase
 
-# settings.py
-AUTH_USER_MODEL = 'users.CustomUser'
+AUTH_USER_MODEL = 'users.Profiles'
+
+CORS_ALLOWED_ORIGINS = [
+    "https://chat-xi-khaki-37.vercel.app",
+    "http://localhost:3000",
+]

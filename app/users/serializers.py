@@ -1,19 +1,9 @@
+# users/serializers.py
 from rest_framework import serializers
-from .models import CustomUser
+from .models import Profiles
 
-class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
+class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomUser
-        fields = ['username', 'password', 'first_name', 'last_name']
-
-    def create(self, validated_data):
-        user = CustomUser(
-            username=validated_data['username'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name'],
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+        model = Profiles
+        fields = ['id', 'username', 'bio', 'avatar_url', 'phone_number', 'created_at']
+        read_only_fields = ['id', 'created_at'] # These are handled by Supabase/Postgres
