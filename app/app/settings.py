@@ -1,20 +1,17 @@
 from pathlib import Path
-from datetime import timedelta
 import os
-import dj_database_url # Add this to requirements.txt
+import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY: Use an environment variable for live deployment
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-b+cwi6r!r%4=&58i17l*z4d+z((yj00mvoxp-9y5(h%i-&q)xl')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-# Vercel provides a system env for the URL
 ALLOWED_HOSTS = [
-    'chat-xi-khaki-37.vercel.app', 
-    '.vercel.app', # Allows all Vercel subdomains
-    'localhost', 
+    'chat-xi-khaki-37.vercel.app',
+    '.vercel.app',
+    'localhost',
     '127.0.0.1'
 ]
 
@@ -31,18 +28,16 @@ INSTALLED_APPS = [
     'chatgroup',
     'status',
     'trends',
-    
-    # 'channels', # REMOVE THIS: Not supported on Vercel
+
     'rest_framework',
-    # 'rest_framework_simplejwt',
     'corsheaders',
-    'whitenoise.runserver_nostatic', # For serving static files on Vercel
+    'whitenoise.runserver_nostatic',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware', # Add this after security
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,63 +46,28 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'api.authentication.SupabaseAuthentication', # Use our custom bridge
+        'api.authentication.SupabaseAuthentication',
     ],
 }
 
-# SIMPLE_JWT = {
-#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-#     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-#     "ROTATE_REFRESH_TOKENS": True,
-#     "BLACKLIST_AFTER_ROTATION": True,
-# }
-
 ROOT_URLCONF = 'app.urls'
 
-# --- DATABASE CONFIG ---
-# Replace your current DATABASES block with this:
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgres://postgres.xxuelagumqjmytaacjgg:g9CLArEEdvVZkaeg@aws-0-eu-west-1.pooler.supabase.com:6543/postgres',
+        default=os.environ.get('DATABASE_URL'),
         conn_max_age=600
     )
 }
 
-# --- REMOVE ASGI/CHANNELS ---
-# Since Vercel is serverless, we use standard WSGI
 WSGI_APPLICATION = 'app.wsgi.application'
-# ASGI_APPLICATION = "app.asgi.application" # Disabled for Vercel
-# CHANNEL_LAYERS = { ... } # Disabled for Vercel
 
-# --- STATIC FILES ---
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
-# --- MEDIA (SUPABASE STORAGE) ---
-# Vercel's file system is read-only. You cannot save media to BASE_DIR/media.
-# You will need to use Supabase Buckets or Cloudinary here.
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' # Example for S3/Supabase
-
-#AUTH_USER_MODEL = 'users.Profiles'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 CORS_ALLOWED_ORIGINS = [
     "https://chat-xi-khaki-37.vercel.app",
@@ -116,7 +76,9 @@ CORS_ALLOWED_ORIGINS = [
 
 APPEND_SLASH = False
 
-SUPABASE_JWT_SECRET = os.environ.get('SUPABASE_JWT_SECRET')
-
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 WHITENOISE_USE_FINDERS = True
+
+# ✅ ADD THESE
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')
