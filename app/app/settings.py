@@ -103,7 +103,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # --- STATIC FILES ---
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # --- MEDIA (SUPABASE STORAGE) ---
 # Vercel's file system is read-only. You cannot save media to BASE_DIR/media.
@@ -122,3 +122,4 @@ APPEND_SLASH = False
 SUPABASE_JWT_SECRET = os.environ.get('SUPABASE_JWT_SECRET')
 
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
+WHITENOISE_USE_FINDERS = True
