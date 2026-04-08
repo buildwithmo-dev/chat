@@ -1,27 +1,22 @@
-from rest_framework import generics, status
-from rest_framework.permissions import AllowAny # Import AllowAny
+# users/views.py
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework import status
+from django.conf import settings
+from jose import jwt
 from .models import Profiles
 from .serializers import ProfileSerializer
-from api.authentication import SupabaseAuthentication # Import your auth class
-from jose import jwt
-from django.conf import settings
 
-class ProfileDetailView(generics.RetrieveUpdateAPIView):
-    serializer_class = ProfileSerializer
-    # CHANGE THIS: Use AllowAny so the 'register/' endpoint can be reached 
-    # even before the Profiles row is created.
+class ProfileDetailView(APIView):
+    # Required to allow new users to register before they have a DB profile
     permission_classes = [AllowAny] 
 
-    def get_object(self):
-        return self.request.user
-
-    def post(self, request, *args, **kwargs):
-        # 1. Manually verify the Supabase Token since we are using AllowAny
+    def post(self, request):
         auth_header = request.META.get('HTTP_AUTHORIZATION')
         if not auth_header:
-            return Response({"detail": "No token provided"}, status=401)
-        
+            return Response({"error": "No token provided"}, status=401)
+
         try:
             token = auth_header.split(' ')[1]
             payload = jwt.decode(
@@ -32,10 +27,9 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
             )
             supabase_user_id = payload.get('sub')
         except Exception as e:
-            return Response({"detail": f"Token invalid: {str(e)}"}, status=403)
+            return Response({"error": f"Token invalid: {str(e)}"}, status=403)
 
-        # 2. Use 'update_or_create' to handle the registration
-        # This matches the 'sub' from the token to the 'id' in your Profiles model
+        # Sync profile data from Supabase to Django
         profile, created = Profiles.objects.update_or_create(
             id=supabase_user_id,
             defaults={
@@ -44,10 +38,15 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
             }
         )
 
-        # 3. Handle Avatar if present
         if 'avatar' in request.FILES:
             profile.avatar = request.FILES['avatar']
             profile.save()
 
-        serializer = self.get_serializer(profile)
+        serializer = ProfileSerializer(profile)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def get(self, request):
+        if not request.user:
+            return Response({"error": "Not authenticated"}, status=401)
+        serializer = ProfileSerializer(request.user)
+        return Response(serializer.data)

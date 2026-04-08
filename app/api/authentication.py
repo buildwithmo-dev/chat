@@ -12,10 +12,11 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
 
         try:
             token = auth_header.split(' ')[1]
+            # CRITICAL: Specify HS256 to stop the "alg not allowed" error
             payload = jwt.decode(
                 token,
                 settings.SUPABASE_JWT_SECRET,
-                algorithms=["HS256"], # This MUST match the Supabase setting
+                algorithms=["HS256"], 
                 audience="authenticated"
             )
             user_id = payload.get('sub')
@@ -23,9 +24,9 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             raise exceptions.AuthenticationFailed(f'Token validation failed: {str(e)}')
 
         try:
-            # This is fine for GET/PATCH requests once the user is registered
+            # Standard flow for logged-in users
             user_profile = Profiles.objects.get(id=user_id)
             return (user_profile, None)
         except Profiles.DoesNotExist:
-            # We return None here so that the View can handle registration
+            # Registration flow: Return None so the View can create the profile
             return None
