@@ -83,15 +83,12 @@ REST_FRAMEWORK = {
 ROOT_URLCONF = 'app.urls'
 
 # --- DATABASE CONFIG ---
+# Replace your current DATABASES block with this:
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'postgres.xxuelagumqjmytaacjgg', # Your user from the screenshot
-        'PASSWORD': 'g9CLArEEdvVZkaeg',
-        'HOST': 'aws-0-eu-west-1.pooler.supabase.com', # Your host from screenshot
-        'PORT': '6543', # Using the pooler port from your screenshot
-    }
+    'default': dj_database_url.config(
+        default='postgres://postgres.xxuelagumqjmytaacjgg:g9CLArEEdvVZkaeg@aws-0-eu-west-1.pooler.supabase.com:6543/postgres',
+        conn_max_age=600
+    )
 }
 
 # --- REMOVE ASGI/CHANNELS ---
