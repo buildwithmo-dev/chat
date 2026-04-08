@@ -1,10 +1,9 @@
+# users/urls.py
 from django.urls import path
-from . import views
+from .views import RegisterView # Make sure you import your view
 
 urlpatterns = [
-    # We remove Register, Login, Refresh, and Logout 
-    # because Next.js + Supabase handle those now.
-    
-    # This is a placeholder for when you create a ProfileView
-    # path('profile/', views.ProfileDetailView.as_view(), name='profile-detail'),
+    # Add this back! 
+    # Use 'register/' if you want to use the trailing slash
+    path('register/', RegisterView.as_view(), name='register'), 
 ]
