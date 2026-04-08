@@ -116,3 +116,5 @@ CORS_ALLOWED_ORIGINS = [
     "https://chat-xi-khaki-37.vercel.app",
     "http://localhost:3000",
 ]
+
+APPEND_SLASH = False
