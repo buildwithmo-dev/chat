@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     
     # 'channels', # REMOVE THIS: Not supported on Vercel
     'rest_framework',
-    'rest_framework_simplejwt',
+    # 'rest_framework_simplejwt',
     'corsheaders',
     'whitenoise.runserver_nostatic', # For serving static files on Vercel
 ]
@@ -73,12 +73,12 @@ REST_FRAMEWORK = {
     ],
 }
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
-    "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
-}
+# SIMPLE_JWT = {
+#     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+#     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+#     "ROTATE_REFRESH_TOKENS": True,
+#     "BLACKLIST_AFTER_ROTATION": True,
+# }
 
 ROOT_URLCONF = 'app.urls'
 
@@ -110,7 +110,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 # You will need to use Supabase Buckets or Cloudinary here.
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' # Example for S3/Supabase
 
-AUTH_USER_MODEL = 'users.Profiles'
+#AUTH_USER_MODEL = 'users.Profiles'
 
 CORS_ALLOWED_ORIGINS = [
     "https://chat-xi-khaki-37.vercel.app",
@@ -118,3 +118,5 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 APPEND_SLASH = False
+
+SUPABASE_JWT_SECRET = os.environ.get('SUPABASE_JWT_SECRET')
