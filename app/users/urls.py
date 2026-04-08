@@ -1,9 +1,8 @@
 # users/urls.py
 from django.urls import path
-from .views import RegisterView # Make sure you import your view
+from .views import ProfileDetailView # We'll use your Profile view as the endpoint
 
 urlpatterns = [
-    # Add this back! 
-    # Use 'register/' if you want to use the trailing slash
-    path('register/', RegisterView.as_view(), name='register'), 
+    # This maps the URL your React app is hitting to your Profile view
+    path('register/', ProfileDetailView.as_view(), name='register'), 
 ]

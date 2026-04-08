@@ -9,5 +9,8 @@ class ProfileDetailView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        # This returns the profile of the person currently logged in via Supabase JWT
         return self.request.user
+
+    # Add this so your 'api.post' from React works
+    def post(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
