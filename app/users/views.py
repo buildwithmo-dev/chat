@@ -1,7 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
 from users.models import Profiles
 from .serializers import ProfileSerializer
 
@@ -11,9 +10,7 @@ class ProfileDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        user = request.user
-
-        print("SUPABASE USER (DEBUG):", user.id)  # ✅ SAFE HERE
+        user = request.user  # ✅ comes from SupabaseAuthentication
 
         profile, _ = Profiles.objects.update_or_create(
             id=user.id,
@@ -31,8 +28,6 @@ class ProfileDetailView(APIView):
 
     def get(self, request):
         user = request.user
-
-        print("SUPABASE USER (DEBUG):", user.id)  # ✅ SAFE HERE
 
         try:
             profile = Profiles.objects.get(id=user.id)

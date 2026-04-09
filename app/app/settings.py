@@ -1,5 +1,5 @@
-from pathlib import Path
 import os
+from pathlib import Path
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -9,7 +9,6 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
-    'chat-xi-khaki-37.vercel.app',
     '.vercel.app',
     'localhost',
     '127.0.0.1'
@@ -25,9 +24,6 @@ INSTALLED_APPS = [
 
     'users',
     'api',
-    'chatgroup',
-    'status',
-    'trends',
 
     'rest_framework',
     'corsheaders',
@@ -43,9 +39,9 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# 🔥 CRITICAL
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'api.authentication.SupabaseAuthentication',
@@ -61,24 +57,17 @@ DATABASES = {
     )
 }
 
-WSGI_APPLICATION = 'app.wsgi.application'
-
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# 🔥 REQUIRED FOR SUPABASE
+SUPABASE_URL = os.environ.get('SUPABASE_URL')
+SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')
 
+# CORS
 CORS_ALLOWED_ORIGINS = [
     "https://chat-xi-khaki-37.vercel.app",
     "http://localhost:3000",
 ]
 
 APPEND_SLASH = False
-
-WHITENOISE_KEEP_ONLY_HASHED_FILES = True
-WHITENOISE_USE_FINDERS = True
-
-# ✅ ADD THESE
-SUPABASE_URL = os.environ.get('SUPABASE_URL')
-SUPABASE_ANON_KEY = os.environ.get('SUPABASE_ANON_KEY')
