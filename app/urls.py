@@ -4,8 +4,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 
-def health(request):
-    return JsonResponse({"status": "ok"})
+def health_check(request):
+    return JsonResponse({
+        "status": "ok",
+        "service": "chat backend"
+    })
 
 
 urlpatterns = [
