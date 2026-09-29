@@ -11,7 +11,8 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
         "ALLOWED_HOSTS",
-        "localhost,127.0.0.1"
+        "localhost,127.0.0.1",
+        "chat-9885.onrender.com"
     ).split(",")
     if host.strip()
 ]
@@ -62,7 +63,7 @@ SUPABASE_JWT_SECRET = os.environ.get("SUPABASE_JWT_SECRET", "")
 
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
-    for origin in os.environ.get("CORS_ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    for origin in os.environ.get("CORS_ALLOWED_ORIGINS", "https://chat-xi-khaki-37.vercel.app").split(",")
     if origin.strip()
 ]
 
