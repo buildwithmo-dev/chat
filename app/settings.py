@@ -12,7 +12,6 @@ ALLOWED_HOSTS = [
     for host in os.getenv(
         "ALLOWED_HOSTS",
         "localhost,127.0.0.1",
-        "chat-9885.onrender.com"
     ).split(",")
     if host.strip()
 ]
