@@ -1,5 +1,4 @@
 import jwt
-from jwt import InvalidTokenError
 from django.conf import settings
 from rest_framework import authentication, exceptions
 from users.models import Profiles
@@ -25,15 +24,18 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             )
 
         try:
-            # Supabase publishes the public keys used to verify JWTs.
             jwks_url = (
                 f"{settings.SUPABASE_URL}/auth/v1/.well-known/jwks.json"
             )
 
+            print(f"JWKS URL: {jwks_url}")
+
             jwks_client = jwt.PyJWKClient(jwks_url)
 
-            # Select the public key matching the JWT's `kid`.
             signing_key = jwks_client.get_signing_key_from_jwt(token)
+
+            print(f"JWT algorithm: {jwt.get_unverified_header(token).get('alg')}")
+            print(f"JWT key ID: {jwt.get_unverified_header(token).get('kid')}")
 
             payload = jwt.decode(
                 token,
@@ -43,23 +45,45 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
             )
 
         except jwt.ExpiredSignatureError as exc:
+            print(f"JWT ERROR: expired: {exc}")
             raise exceptions.AuthenticationFailed(
                 "Token expired"
             ) from exc
 
         except jwt.InvalidSignatureError as exc:
+            print(f"JWT ERROR: invalid signature: {exc}")
             raise exceptions.AuthenticationFailed(
                 "Invalid token signature"
             ) from exc
 
-        except jwt.InvalidTokenError as exc:
+        except jwt.InvalidAudienceError as exc:
+            print(f"JWT ERROR: invalid audience: {exc}")
             raise exceptions.AuthenticationFailed(
-                f"Invalid token: {str(exc)}"
+                "Invalid token audience"
+            ) from exc
+
+        except jwt.InvalidAlgorithmError as exc:
+            print(f"JWT ERROR: invalid algorithm: {exc}")
+            raise exceptions.AuthenticationFailed(
+                "Invalid token algorithm"
+            ) from exc
+
+        except jwt.PyJWKClientError as exc:
+            print(f"JWKS ERROR: {exc}")
+            raise exceptions.AuthenticationFailed(
+                f"Unable to retrieve Supabase signing key: {exc}"
+            ) from exc
+
+        except jwt.InvalidTokenError as exc:
+            print(f"JWT ERROR: {type(exc).__name__}: {exc}")
+            raise exceptions.AuthenticationFailed(
+                f"Invalid token: {exc}"
             ) from exc
 
         except Exception as exc:
+            print(f"AUTH ERROR: {type(exc).__name__}: {exc}")
             raise exceptions.AuthenticationFailed(
-                "Unable to verify Supabase token"
+                f"Unable to verify Supabase token: {type(exc).__name__}: {exc}"
             ) from exc
 
         user_id = payload.get("sub")
@@ -72,6 +96,7 @@ class SupabaseAuthentication(authentication.BaseAuthentication):
         try:
             profile, _ = Profiles.objects.get_or_create(id=user_id)
         except Exception as exc:
+            print(f"PROFILE ERROR: {type(exc).__name__}: {exc}")
             raise exceptions.AuthenticationFailed(
                 "Unable to load user profile"
             ) from exc
