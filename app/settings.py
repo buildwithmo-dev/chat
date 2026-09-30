@@ -58,7 +58,6 @@ REST_FRAMEWORK = {
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
 SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
-SUPABASE_JWT_SECRET = os.environ.get("SUPABASE_JWT_SECRET", "")
 
 CORS_ALLOWED_ORIGINS = [
     origin.strip()
