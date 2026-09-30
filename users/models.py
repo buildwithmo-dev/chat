@@ -1,5 +1,5 @@
-# users/models.py
 from django.db import models
+
 
 class Profiles(models.Model):
     # This ID matches the UUID from Supabase auth.users
@@ -11,8 +11,16 @@ class Profiles(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=True)
 
     class Meta:
-        managed = False  # Django won't try to create/modify this table
-        db_table = 'profiles' # Points to the table in your SQL schema
+        managed = False
+        db_table = 'profiles'
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
 
     def __str__(self):
         return self.username or str(self.id)
