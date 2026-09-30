@@ -1,37 +1,28 @@
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from users.models import Profiles
+from rest_framework.views import APIView
+
+from .models import Profiles
 from .serializers import ProfileSerializer
 
 
 class ProfileDetailView(APIView):
-
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        user = request.user  # ✅ comes from SupabaseAuthentication
-
-        profile, _ = Profiles.objects.update_or_create(
-            id=user.id,
-            defaults={
-                "username": request.data.get("username"),
-                "bio": request.data.get("bio", "")
-            }
-        )
-
-        if "avatar" in request.FILES:
-            profile.avatar = request.FILES["avatar"]
-            profile.save()
-
-        return Response(ProfileSerializer(profile).data, status=201)
-
     def get(self, request):
-        user = request.user
-
         try:
-            profile = Profiles.objects.get(id=user.id)
+            profile = Profiles.objects.get(id=request.user.id)
         except Profiles.DoesNotExist:
             return Response({"error": "Profile not found"}, status=404)
-
         return Response(ProfileSerializer(profile).data)
+
+    def post(self, request):
+        # Partial update: only fields actually sent are changed.
+        # Avatars: upload to Supabase Storage from the client, then send avatar_url.
+        profile, created = Profiles.objects.get_or_create(id=request.user.id)
+        serializer = ProfileSerializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=201 if created else 200)
+
+    put = patch = post
